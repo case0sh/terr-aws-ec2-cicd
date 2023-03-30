@@ -8,22 +8,10 @@ workflow:
 
 # List of variables
 variables:
-  # TF_DIR: ${CI_PROJECT_DIR}       # Directory in which terraform files are kept
-  # STATE_NAME: "dev"          # Name of terraform state used in "terraform init"command
-  # ADDRESS: "https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/${STATE_NAME}"
-  PROJECT_PATH: ${CI_PROJECT_PATH:-case0sh/terraform-do-cicd}
-  ENV_NAME: ${TF_ENV_NAME:-dev}
-  CI_API_V4_URL: https://gitlab.com/api/v4
-  CI_PROJECT_ID: ${PROJECT_PATH//\//%2f}
+  TF_DIR: ${CI_PROJECT_DIR}       # Directory in which terraform files are kept
+  STATE_NAME: "dev"          # Name of terraform state used in "terraform init"command
+  ADDRESS: "https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/${STATE_NAME}"
 
-  TF_HTTP_ADDRESS: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/$ENV_NAME"
-  TF_HTTP_LOCK_ADDRESS: "${TF_HTTP_ADDRESS}/lock"
-  TF_HTTP_LOCK_METHOD: "POST"
-  TF_HTTP_UNLOCK_ADDRESS: "${TF_HTTP_ADDRESS}/lock"
-  TF_HTTP_UNLOCK_METHOD: "DELETE"
-  TF_HTTP_USERNAME: "gitlab-token"
-  TF_HTTP_RETRY_WAIT_MIN: "5"
-  TF_HTTP_PASSWORD: "YOUR-ACCESS-TOKEN"
 # Stages of the pipeline
 stages:
   - validate
@@ -39,14 +27,16 @@ image:
 # Script to be executed before each stage 
 before_script:
   - terraform --version
-
-          # To get inside the working directory
-  - terraform init  -reconfigure  -backend-config=address="${TF_HTTP_ADDRESS}"  -backend-config=lock_address="${TF_HTTP_LOCK_ADDRESS}"  -backend-config=unlock_address="${TF_HTTP_UNLOCK_ADDRESS}"  -backend-config=username="${TF_HTTP_USERNAME}"  -backend-config=password="${GITLAB_TOKEN}"  -backend-config=lock_method="${TF_HTTP_LOCK_METHOD}"  -backend-config=unlock_method="${TF_HTTP_UNLOCK_METHOD}"  -backend-config=retry_wait_min="${TF_HTTP_RETRY_WAIT_MIN}"
+  - export GITLAB_ACCESS_TOKEN=$TOKEN
+  - cd ${TF_DIR}            # To get inside the working directory
+  - terraform init  -reconfigure   -backend-config="address=${ADDRESS}"  -backend-config="lock_address=${ADDRESS}/dev" -backend-config="unlock_address=${ADDRESS}/lock" -backend-config="username=case0sh" -backend-config="password=$GITLAB_ACCESS_TOKEN"  -backend-config="lock_method=POST"  -backend-config="unlock_method=DELETE"  -backend-config="retry_wait_min=5"    
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
   - eval $(ssh-agent -s)
   - ssh-keygen -o -a 100 -t ed25519 -f ~/.ssh/id_ed25519
   - ls -la ~/.ssh
+
+
 
 validate:
   stage: validate
