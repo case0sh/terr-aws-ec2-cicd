@@ -1,0 +1,93 @@
+---
+# Pipeline will only trigger when something is pushed to main branch 
+workflow:  
+    rules:
+      - if: $CI_COMMIT_BRANCH != "main" && $CI_PIPELINE_SOURCE != "merge_request_event"
+        when: never
+      - when: always
+
+# List of variables
+variables:
+  TF_DIR: ${CI_PROJECT_DIR}       # Directory in which terraform files are kept
+  STATE_NAME: "lock"          # Name of terraform state used in "terraform init"command
+  ADDRESS: "https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/${STATE_NAME}"
+
+# Stages of the pipeline
+stages:
+  - validate
+  - plan
+  - apply
+  - destroy
+
+# Image which will use in each stage
+image:
+  name: registry.hub.docker.com/hashicorp/terraform:light
+  entrypoint: [""]
+
+# Script to be executed before each stage 
+before_script:
+  - terraform --version
+  - export GITLAB_ACCESS_TOKEN=$TOKEN
+  - cd ${TF_DIR}            # To get inside the working directory
+  - terraform init  -reconfigure  
+  - backend-config="address=${ADDRESS}" 
+  - backend-config="lock_address=${ADDRESS}/lock" -backend-config="unlock_address=${ADDRESS}/lock" -backend-config="username=case0sh" -backend-config="password=$GITLAB_ACCESS_TOKEN" 
+  - backend-config="lock_method=POST" 
+  - backend-config="unlock_method=DELETE" 
+  - backend-config="retry_wait_min=5"    
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - eval $(ssh-agent -s)
+  - ssh-keygen -o -a 100 -t ed25519 -f ~/.ssh/id_ed25519
+  - ls -la ~/.ssh
+
+
+
+validate:
+  stage: validate
+  script:
+    - terraform validate
+  cache:
+    key: ${CI_COMMIT_REF_NAME}
+    paths:
+    - ${TF_DIR}/.terraform
+    policy: pull-push
+
+plan:
+  stage: plan
+  script:
+    - terraform plan 
+  dependencies:
+    - validate
+  cache:
+    key: ${CI_COMMIT_REF_NAME}
+    paths:
+    - ${TF_DIR}/.terraform
+    policy: pull
+
+
+apply:
+  stage: apply
+  script:
+    - terraform apply  -auto-approve
+  dependencies:
+    - plan
+  cache:
+    key: ${CI_COMMIT_REF_NAME}
+    paths:
+    - ${TF_DIR}/.terraform
+    policy: pull
+
+destroy:
+  stage: destroy
+  script:
+    - terraform destroy  -auto-approve
+  dependencies:
+    - plan
+    - apply
+  cache:
+    key: ${CI_COMMIT_REF_NAME}
+    paths:
+    - ${TF_DIR}/.terraform
+    policy: pull
+  when: manual
