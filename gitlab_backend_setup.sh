@@ -24,13 +24,4 @@ TF_HTTP_PASSWORD: "YOUR-ACCESS-TOKEN"
 
 terraform -v
 
-  - terraform init 
-  - reconfigure 
-  - backend-config=address="${TF_HTTP_ADDRESS}" 
-  - backend-config=lock_address="${TF_HTTP_LOCK_ADDRESS}" 
-  - backend-config=unlock_address="${TF_HTTP_UNLOCK_ADDRESS}" 
-  - backend-config=username="${TF_HTTP_USERNAME}" 
-  - backend-config=password="${GITLAB_TOKEN}" 
-  - backend-config=lock_method="${TF_HTTP_LOCK_METHOD}" 
-  - backend-config=unlock_method="${TF_HTTP_UNLOCK_METHOD}" 
-  - backend-config=retry_wait_min="${TF_HTTP_RETRY_WAIT_MIN}"
+  - terraform init  -reconfigure  -backend-config=address="${TF_HTTP_ADDRESS}"  -backend-config=lock_address="${TF_HTTP_LOCK_ADDRESS}"  -backend-config=unlock_address="${TF_HTTP_UNLOCK_ADDRESS}"  -backend-config=username="${TF_HTTP_USERNAME}"  -backend-config=password="${GITLAB_TOKEN}"  -backend-config=lock_method="${TF_HTTP_LOCK_METHOD}"  -backend-config=unlock_method="${TF_HTTP_UNLOCK_METHOD}"  -backend-config=retry_wait_min="${TF_HTTP_RETRY_WAIT_MIN}"
