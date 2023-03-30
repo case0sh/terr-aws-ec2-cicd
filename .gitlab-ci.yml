@@ -9,7 +9,7 @@ workflow:
 # List of variables
 variables:
   TF_DIR: ${CI_PROJECT_DIR}       # Directory in which terraform files are kept
-  STATE_NAME: "lock"          # Name of terraform state used in "terraform init"command
+  STATE_NAME: "dev"          # Name of terraform state used in "terraform init"command
   ADDRESS: "https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/${STATE_NAME}"
 
 # Stages of the pipeline
@@ -31,7 +31,7 @@ before_script:
   - cd ${TF_DIR}            # To get inside the working directory
   - terraform init  -reconfigure  
   - backend-config="address=${ADDRESS}" 
-  - backend-config="lock_address=${ADDRESS}/lock" -backend-config="unlock_address=${ADDRESS}/lock" -backend-config="username=case0sh" -backend-config="password=$GITLAB_ACCESS_TOKEN" 
+  - backend-config="lock_address=${ADDRESS}/dev" -backend-config="unlock_address=${ADDRESS}/lock" -backend-config="username=case0sh" -backend-config="password=$GITLAB_ACCESS_TOKEN" 
   - backend-config="lock_method=POST" 
   - backend-config="unlock_method=DELETE" 
   - backend-config="retry_wait_min=5"    

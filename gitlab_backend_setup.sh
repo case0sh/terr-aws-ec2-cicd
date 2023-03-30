@@ -8,7 +8,7 @@ then
 fi
 
 # TODO: replace 3 next variables
-PROJECT_PATH=${CI_PROJECT_PATH:-case0sh/terraform-DO-droplets}
+PROJECT_PATH=${CI_PROJECT_PATH:-case0sh/terraform-do-cicd}
 ENV_NAME=${TF_ENV_NAME:-dev}
 CI_API_V4_URL=https://gitlab.com/api/v4
 CI_PROJECT_ID=${PROJECT_PATH//\//%2f}
