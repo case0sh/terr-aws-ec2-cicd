@@ -8,30 +8,27 @@ workflow:
 
 # List of variables
 variables:
-  PROJECT_PATH: ${CI_PROJECT_DIR} 
-  ENV_NAME: "dev"
-  CI_API_V4_URL: https://gitlab.com/api/v4
-  CI_PROJECT_ID: ${PROJECT_PATH//\//%2f}
-
-  TF_HTTP_ADDRESS: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/$ENV_NAME"
-  TF_HTTP_LOCK_ADDRESS: "${TF_HTTP_ADDRESS}/lock"
+  TF_HTTP_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/${CI_PROJECT_NAME}
+  TF_HTTP_LOCK_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/${CI_PROJECT_NAME}/lock
+  TF_HTTP_UNLOCK_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/${CI_PROJECT_NAME}/lock
   TF_HTTP_LOCK_METHOD: "POST"
-  TF_HTTP_UNLOCK_ADDRESS: "${TF_HTTP_ADDRESS}/lock"
   TF_HTTP_UNLOCK_METHOD: "DELETE"
-  TF_HTTP_USERNAME: "case0sh"
+  TF_HTTP_USERNAME: "gitlab-ci-token"
+  TF_HTTP_PASSWORD: ${CI_JOB_TOKEN}
   TF_HTTP_RETRY_WAIT_MIN: "5"
   # TF_HTTP_PASSWORD: "YOUR-ACCESS-TOKEN"
-# Stages of the pipeline
-stages:
-  - validate
-  - plan
-  - apply
-  - destroy
+# # Stages of the pipeline
+# stages:
+#   - validate
+#   - plan
+#   - apply
+#   - destroy
 
 # Image which will use in each stage
 image:
   name: registry.hub.docker.com/hashicorp/terraform:light
   entrypoint: [""]
+
 
 # Script to be executed before each stage 
 before_script:
@@ -47,51 +44,117 @@ before_script:
   - ssh-keygen -o -a 100 -t ed25519 -f ~/.ssh/id_ed25519
   - ls -la ~/.ssh
 
+cache:
+  key: tf
+  paths:
+    - .terraform
+    - .terraform.lock.hcl
+
+stages:
+  - prepare
+  - validate
+  - plan
+  - apply
+  - destroy
+ 
+init:
+  stage: prepare
+  script:
+    - gitlab-terraform init
+  only:  
+    - merge_requests
+    - main
+ 
 validate:
   stage: validate
   script:
-    - terraform validate
-  cache:
-    key: ${CI_COMMIT_REF_NAME}
-    paths:
-    - ${TF_DIR}/.terraform
-    policy: pull-push
-
+    - gitlab-terraform validate
+  only:  
+    - merge_requests
+    - main
+ 
 plan:
   stage: plan
   script:
-    - terraform plan 
-  dependencies:
-    - validate
-  cache:
-    key: ${CI_COMMIT_REF_NAME}
+    - gitlab-terraform plan
+    - gitlab-terraform plan-json
+  artifacts:
     paths:
-    - ${TF_DIR}/.terraform
-    policy: pull
+      - plan.cache
+    reports:
+      terraform: plan.json
 
+  only:  
+    - merge_requests
+    - main 
 
-apply:
+deploy:
   stage: apply
   script:
-    - terraform apply  -auto-approve
-  dependencies:
+    - ls -al
+    - gitlab-terraform apply
+  dependencies:              
     - plan
-  cache:
-    key: ${CI_COMMIT_REF_NAME}
-    paths:
-    - ${TF_DIR}/.terraform
-    policy: pull
-
+  when: manual
+  only:
+    - main
+    
 destroy:
   stage: destroy
   script:
-    - terraform destroy  -auto-approve
-  dependencies:
+    - gitlab-terraform destroy
+  dependencies:          
     - plan
-    - apply
-  cache:
-    key: ${CI_COMMIT_REF_NAME}
-    paths:
-    - ${TF_DIR}/.terraform
-    policy: pull
+    - deploy
   when: manual
+  only:
+    - main
+    
+# validate:
+#   stage: validate
+#   script:
+#     - terraform validate
+#   cache:
+#     key: ${CI_COMMIT_REF_NAME}
+#     paths:
+#     - ${TF_DIR}/.terraform
+#     policy: pull-push
+
+# plan:
+#   stage: plan
+#   script:
+#     - terraform plan 
+#   dependencies:
+#     - validate
+#   cache:
+#     key: ${CI_COMMIT_REF_NAME}
+#     paths:
+#     - ${TF_DIR}/.terraform
+#     policy: pull
+
+
+# apply:
+#   stage: apply
+#   script:
+#     - terraform apply  -auto-approve
+#   dependencies:
+#     - plan
+#   cache:
+#     key: ${CI_COMMIT_REF_NAME}
+#     paths:
+#     - ${TF_DIR}/.terraform
+#     policy: pull
+
+# destroy:
+#   stage: destroy
+#   script:
+#     - terraform destroy  -auto-approve
+#   dependencies:
+#     - plan
+#     - apply
+#   cache:
+#     key: ${CI_COMMIT_REF_NAME}
+#     paths:
+#     - ${TF_DIR}/.terraform
+#     policy: pull
+#   when: manual
