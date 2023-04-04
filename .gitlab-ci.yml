@@ -73,7 +73,7 @@ validate:
 plan:
   stage: plan
   script:
-    - gitlab-terraform plan -var=""
+    - gitlab-terraform plan
     - gitlab-terraform plan-json
   artifacts:
     paths:
