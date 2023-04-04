@@ -26,7 +26,7 @@ variables:
 
 # Image which will use in each stage
 image:
-  name: registry.hub.docker.com/hashicorp/terraform:light
+  name: "$CI_TEMPLATE_REGISTRY_HOST/gitlab-org/terraform-images/stable:latest"
   entrypoint: [""]
 
 
