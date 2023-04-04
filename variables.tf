@@ -28,11 +28,11 @@ variable "user" {
     type        = string
     default = "root"
 }
-# variable "privatekeypath" {
-#   description = "Privat ssh key"
-#     type        = string
-#     default = "~/.ssh/id_ed25519"
-# }
+variable "privatekeypath" {
+  description = "Privat ssh key"
+    type        = string
+    default = "~/.ssh/id_ed25519"
+}
 
 # variable "publicekeypath" {
 #   description = "Public ssh key"
