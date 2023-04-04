@@ -29,7 +29,6 @@ image:
 before_script:
   - terraform --version
   - export GITLAB_TOKEN=$GITLAB_TOKEN
-  -    
   - echo $do_token
   - echo $GITLAB_TOKEN
   - ls -la
