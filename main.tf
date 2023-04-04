@@ -15,7 +15,7 @@ resource "digitalocean_droplet" "web" {
 
   ssh_keys = [
     data.digitalocean_ssh_key.ssh.id,
-    digitalocean_ssh_key.mypub.fingerprint
+    digitalocean_ssh_key.newone.fingerprint
     ]
 
   ## Files
