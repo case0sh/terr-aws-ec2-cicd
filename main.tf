@@ -1,4 +1,4 @@
-resource "digitalocean_ssh_key" "mypub" {
+resource "digitalocean_ssh_key" "newone" {
   name       = "Pubkeys"
   public_key = file(var.publicekeypath)
 }
