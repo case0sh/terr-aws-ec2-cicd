@@ -29,6 +29,8 @@ image:
 before_script:
   - terraform --version
   - export GITLAB_TOKEN=$GITLAB_TOKEN
+  - export TF_VAR_public=$publicekeypath
+  - export TF_VAR_privat=$privatekeypath
   - echo $do_token
   - echo $GITLAB_TOKEN
   - ls -la
