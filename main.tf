@@ -1,6 +1,6 @@
 resource "digitalocean_ssh_key" "newone" {
   name       = "Pubkey"
-  public_key = file(var.publicekeypath)
+  public_key = var.publicekeypath
 }
 
 # Droplet

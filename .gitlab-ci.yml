@@ -17,7 +17,7 @@ variables:
   TF_HTTP_PASSWORD: ${GITLAB_TOKEN}
   TF_HTTP_RETRY_WAIT_MIN: "5"
   TF_VAR_do_token: ${do_token}
-  TF_VAR_privat: ${privatekeypath}
+  # TF_VAR_privat: ${privatekeypath}
   TF_VAR_public: ${publicekeypath}
 # Image which will use in each stage
 image:
@@ -88,7 +88,7 @@ deploy:
   stage: apply
   script:
     - ls -al
-    - gitlab-terraform apply -var="publicekeypath=$publicekeypath" -var="privatekeypath=$privatekeypath"
+    - gitlab-terraform apply -var="publicekeypath=$publicekeypath"
   dependencies:              
     - plan
   # when: manual
