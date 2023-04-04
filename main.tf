@@ -28,7 +28,7 @@ resource "digitalocean_droplet" "web" {
     host = self.ipv4_address
     type = "ssh"
     user  = var.user
-    private_key = var.privatekeypath
+    private_key = file(var.privatekeypath)
     agent  = false
     timeout  = "90s"
 
@@ -40,7 +40,7 @@ resource "digitalocean_droplet" "web" {
     host = self.ipv4_address
     type = "ssh"
     user  = var.user
-    private_key = var.privatekeypath
+    private_key = file(var.privatekeypath)
     agent  = false
     timeout  = "160s"
 
