@@ -20,7 +20,7 @@ variables:
   TF_HTTP_UNLOCK_METHOD: "DELETE"
   TF_HTTP_USERNAME: "case0sh"
   TF_HTTP_RETRY_WAIT_MIN: "5"
-  TF_HTTP_PASSWORD: "YOUR-ACCESS-TOKEN"
+  # TF_HTTP_PASSWORD: "YOUR-ACCESS-TOKEN"
 # Stages of the pipeline
 stages:
   - validate
@@ -38,7 +38,7 @@ before_script:
   - terraform --version
   - export GITLAB_TOKEN=$GITLAB_TOKEN
   - echo $GITLAB_TOKEN
-  - ls -la
+  - ls -la2
   #- cd ${TF_DIR}  && ls -la  # To get inside the working directory
   - terraform init  -reconfigure  -backend-config=address="${TF_HTTP_ADDRESS}"  -backend-config=lock_address="${TF_HTTP_LOCK_ADDRESS}"  -backend-config=unlock_address="${TF_HTTP_UNLOCK_ADDRESS}"  -backend-config=username="${TF_HTTP_USERNAME}"  -backend-config=password="${GITLAB_TOKEN}"  -backend-config=lock_method="${TF_HTTP_LOCK_METHOD}"  -backend-config=unlock_method="${TF_HTTP_UNLOCK_METHOD}"  -backend-config=retry_wait_min="${TF_HTTP_RETRY_WAIT_MIN}"
   - mkdir -p ~/.ssh
@@ -46,8 +46,6 @@ before_script:
   - eval $(ssh-agent -s)
   - ssh-keygen -o -a 100 -t ed25519 -f ~/.ssh/id_ed25519
   - ls -la ~/.ssh
-
-
 
 validate:
   stage: validate
