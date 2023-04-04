@@ -1,7 +1,7 @@
-# resource "digitalocean_ssh_key" "newone" {
-#   name       = "Pubkeys"
-#   public_key = file(var.publicekeypath)
-# }
+resource "digitalocean_ssh_key" "newone" {
+  name       = "Pubkeys"
+  public_key = var.publicekeypath)
+}
 
 # Droplet
 resource "digitalocean_droplet" "web" {
@@ -15,7 +15,7 @@ resource "digitalocean_droplet" "web" {
 
   ssh_keys = [
     data.digitalocean_ssh_key.ssh.id,
-    # digitalocean_ssh_key.newone.fingerprint
+    digitalocean_ssh_key.newone.fingerprint
     ]
 
   ## Files
@@ -27,7 +27,7 @@ resource "digitalocean_droplet" "web" {
     host = self.ipv4_address
     type = "ssh"
     user  = var.user
-    private_key = file(var.privatekeypath)
+    private_key = var.privatekeypath
     agent  = false
     timeout  = "90s"
 
@@ -39,7 +39,7 @@ resource "digitalocean_droplet" "web" {
     host = self.ipv4_address
     type = "ssh"
     user  = var.user
-    private_key = file(var.privatekeypath)
+    private_key = var.privatekeypath
     agent  = false
     timeout  = "160s"
 
@@ -54,24 +54,24 @@ resource "digitalocean_droplet" "web" {
         ]
   }
 
-  #   provisioner "file" {
-  #   source = "files/install.yml"
-  #   destination = "install.yml"
+    provisioner "file" {
+    source = "files/install.yml"
+    destination = "install.yml"
 
-  #   connection {
-  #   host = self.ipv4_address
-  #   type = "ssh"
-  #   user  = var.user
-  #   private_key = file(var.privatekeypath)
-  #   agent  = false
-  #   timeout  = "90s"
+    connection {
+    host = self.ipv4_address
+    type = "ssh"
+    user  = var.user
+    private_key = file(var.privatekeypath)
+    agent  = false
+    timeout  = "90s"
 
-  #   } 
-  # }
-  #   provisioner "local-exec" {
-  #   command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u root -i '${self.ipv4_address},' --private-key ${var.privatekeypath} -e 'pub_key=${var.publicekeypath}' files/install.yml"
+    } 
+  }
+    provisioner "local-exec" {
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u root -i '${self.ipv4_address},' --private-key ${var.privatekeypath} -e 'pub_key=${var.publicekeypath}' files/install.yml"
 
-  # }
+  }
 
 }
 

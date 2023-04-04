@@ -17,6 +17,8 @@ variables:
   TF_HTTP_PASSWORD: ${GITLAB_TOKEN}
   TF_HTTP_RETRY_WAIT_MIN: "5"
   TF_VAR_do_token: ${do_token}
+  TF_VAR_privat: ${privatekeypath}
+  TF_VAR_public: ${publicekeypath}
 # Image which will use in each stage
 image:
   name: "$CI_TEMPLATE_REGISTRY_HOST/gitlab-org/terraform-images/stable:latest"
@@ -27,7 +29,9 @@ image:
 before_script:
   - terraform --version
   - export GITLAB_TOKEN=$GITLAB_TOKEN
-  - export do_token=$do_token
+  - export publicekeypath=$publicekeypath
+  - export privatekeypath=$privatekeypath
+  - export   
   - echo $do_token
   - echo $GITLAB_TOKEN
   - ls -la
