@@ -1,7 +1,7 @@
-# resource "digitalocean_ssh_key" "newone" {
-#   name       = "Pubkey"
-#   public_key = var.publicekeypath
-# }
+resource "digitalocean_ssh_key" "newone" {
+  name       = "Pubkey"
+  public_key = var.publicekeypath
+}
 
 # Droplet
 resource "digitalocean_droplet" "web" {
@@ -14,9 +14,8 @@ resource "digitalocean_droplet" "web" {
   count  = 1
 
   ssh_keys = [
-    data.digitalocean_ssh_key.ssh.id
-    # ,
-    # digitalocean_ssh_key.newone.fingerprint
+    data.digitalocean_ssh_key.ssh.id,
+    digitalocean_ssh_key.newone.fingerprint
     ]
 
   ## Files
