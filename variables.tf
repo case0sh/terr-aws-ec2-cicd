@@ -31,10 +31,12 @@ variable "user" {
 variable "privatekeypath" {
   description = "Privat ssh key"
   type        = string
+  default     = "~/.ssh/id_ed25519"
 }
 
 variable "publicekeypath" {
   description = "Public ssh key"
   type        = string
+  default     = "~/.ssh/id_ed25519.pub"
 }
 

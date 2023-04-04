@@ -17,8 +17,6 @@ variables:
   TF_HTTP_PASSWORD: ${GITLAB_TOKEN}
   TF_HTTP_RETRY_WAIT_MIN: "5"
   TF_VAR_do_token: ${do_token}
-  TF_VAR_privat: ${privatekeypath}
-  TF_VAR_public: ${publicekeypath}
 # Image which will use in each stage
 image:
   name: "$CI_TEMPLATE_REGISTRY_HOST/gitlab-org/terraform-images/stable:latest"
@@ -105,52 +103,3 @@ destroy:
   when: manual
   only:
     - main
-
-# validate:
-#   stage: validate
-#   script:
-#     - terraform validate
-#   cache:
-#     key: ${CI_COMMIT_REF_NAME}
-#     paths:
-#     - ${TF_DIR}/.terraform
-#     policy: pull-push
-
-# plan:
-#   stage: plan
-#   script:
-#     - terraform plan 
-#   dependencies:
-#     - validate
-#   cache:
-#     key: ${CI_COMMIT_REF_NAME}
-#     paths:
-#     - ${TF_DIR}/.terraform
-#     policy: pull
-
-
-# apply:
-#   stage: apply
-#   script:
-#     - terraform apply  -auto-approve
-#   dependencies:
-#     - plan
-#   cache:
-#     key: ${CI_COMMIT_REF_NAME}
-#     paths:
-#     - ${TF_DIR}/.terraform
-#     policy: pull
-
-# destroy:
-#   stage: destroy
-#   script:
-#     - terraform destroy  -auto-approve
-#   dependencies:
-#     - plan
-#     - apply
-#   cache:
-#     key: ${CI_COMMIT_REF_NAME}
-#     paths:
-#     - ${TF_DIR}/.terraform
-#     policy: pull
-#   when: manual
