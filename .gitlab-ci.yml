@@ -29,6 +29,8 @@ image:
 before_script:
   - terraform --version
   - export GITLAB_TOKEN=$GITLAB_TOKEN
+  - export publicekeypath=$publicekeypath
+  - export privatekeypath=$privatekeypath
   - echo $do_token
   - echo $GITLAB_TOKEN
   - ls -la
@@ -72,7 +74,7 @@ validate:
 plan:
   stage: plan
   script:
-    - gitlab-terraform plan
+    - gitlab-terraform plan -var=""
     - gitlab-terraform plan-json
   artifacts:
     paths:
