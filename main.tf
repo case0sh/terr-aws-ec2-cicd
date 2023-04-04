@@ -1,6 +1,6 @@
 resource "digitalocean_ssh_key" "newone" {
   name       = "Pubkeys"
-  public_key = var.publicekeypath)
+  public_key = var.publicekeypath
 }
 
 # Droplet
@@ -62,7 +62,7 @@ resource "digitalocean_droplet" "web" {
     host = self.ipv4_address
     type = "ssh"
     user  = var.user
-    private_key = file(var.privatekeypath)
+    private_key = var.privatekeypath
     agent  = false
     timeout  = "90s"
 
