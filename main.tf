@@ -5,45 +5,45 @@ resource "digitalocean_ssh_key" "newone" {
 
 # Droplet
 resource "digitalocean_droplet" "web" {
-  image              = var.droplet_image
-  name               = "dev-${count.index}"
-  region             = var.droplet_region
-  size               = var.droplet_size
-  backups            = false
-  monitoring         = true
-  count  = 1
+  image      = var.droplet_image
+  name       = "dev-${count.index}"
+  region     = var.droplet_region
+  size       = var.droplet_size
+  backups    = false
+  monitoring = true
+  count      = 1
 
   ssh_keys = [
     data.digitalocean_ssh_key.ssh.id,
     digitalocean_ssh_key.newone.fingerprint
-    ]
+  ]
 
   ## Files
   provisioner "file" {
-    source = "files/installations.sh"
+    source      = "files/installations.sh"
     destination = "installations.sh"
 
     connection {
-    host = self.ipv4_address
-    type = "ssh"
-    user  = var.user
-    private_key = var.privatekeypath
-    agent  = false
-    timeout  = "90s"
+      host        = self.ipv4_address
+      type        = "ssh"
+      user        = var.user
+      private_key = var.privatekeypath
+      agent       = false
+      timeout     = "90s"
 
-    } 
+    }
   }
 
   provisioner "remote-exec" {
     connection {
-    host = self.ipv4_address
-    type = "ssh"
-    user  = var.user
-    private_key = var.privatekeypath
-    agent  = false
-    timeout  = "160s"
+      host        = self.ipv4_address
+      type        = "ssh"
+      user        = var.user
+      private_key = var.privatekeypath
+      agent       = false
+      timeout     = "160s"
 
-    } 
+    }
     inline = [
       "apt update  && sudo apt install -y gnupg software-properties-common python3 -y", "echo Done!",
       "chmod +x ~/installations.sh",
@@ -51,24 +51,24 @@ resource "digitalocean_droplet" "web" {
       "./installations.sh",
       "ls -la",
       "./installations.sh"
-        ]
+    ]
   }
 
-    provisioner "file" {
-    source = "files/install.yml"
+  provisioner "file" {
+    source      = "files/install.yml"
     destination = "install.yml"
 
     connection {
-    host = self.ipv4_address
-    type = "ssh"
-    user  = var.user
-    private_key = var.privatekeypath
-    agent  = false
-    timeout  = "90s"
+      host        = self.ipv4_address
+      type        = "ssh"
+      user        = var.user
+      private_key = var.privatekeypath
+      agent       = false
+      timeout     = "90s"
 
-    } 
+    }
   }
-    provisioner "local-exec" {
+  provisioner "local-exec" {
     command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u root -i '${self.ipv4_address},' --private-key ${var.privatekeypath} -e 'pub_key=${var.publicekeypath}' files/install.yml"
 
   }
@@ -97,12 +97,12 @@ resource "digitalocean_firewall" "web" {
     port_range       = "443"
     source_addresses = ["0.0.0.0/0", "::/0"]
   }
- inbound_rule {
+  inbound_rule {
     protocol         = "udp"
     port_range       = "16262"
     source_addresses = ["0.0.0.0/0", "::/0"]
   }
-   inbound_rule {
+  inbound_rule {
     protocol         = "udp"
     port_range       = "16261"
     source_addresses = ["0.0.0.0/0", "::/0"]
@@ -137,7 +137,7 @@ resource "random_string" "random" {
 
 output "droplet_output" {
   value = {
-    for droplet in digitalocean_droplet.web:
+    for droplet in digitalocean_droplet.web :
     droplet.name => droplet.ipv4_address
   }
 }
