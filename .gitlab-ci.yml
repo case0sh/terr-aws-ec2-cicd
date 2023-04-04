@@ -16,13 +16,6 @@ variables:
   TF_HTTP_USERNAME: "gitlab-ci-token"
   TF_HTTP_PASSWORD: ${GITLAB_TOKEN}
   TF_HTTP_RETRY_WAIT_MIN: "5"
-  # TF_HTTP_PASSWORD: "YOUR-ACzzCESS-TOKEN"
-# # Stages of the pipeline
-# stages:
-#   - validate
-#   - plan
-#   - apply
-#   - destroy
 
 # Image which will use in each stage
 image:
