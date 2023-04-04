@@ -6,7 +6,7 @@ resource "digitalocean_ssh_key" "newone" {
 # Droplet
 resource "digitalocean_droplet" "web" {
   image              = var.droplet_image
-  name               = "dev-${count.index}"
+  name               = "dev-${random_string.random.result}"
   region             = var.droplet_region
   size               = var.droplet_size
   backups            = false
