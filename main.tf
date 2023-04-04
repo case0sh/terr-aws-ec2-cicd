@@ -1,5 +1,5 @@
 resource "digitalocean_ssh_key" "newone" {
-  name       = "Pubkeys"
+  name       = "Pubkey"
   public_key = file(var.publicekeypath)
 }
 
