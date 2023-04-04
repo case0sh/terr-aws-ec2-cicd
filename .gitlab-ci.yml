@@ -28,7 +28,7 @@ before_script:
   - terraform --version
   - export GITLAB_TOKEN=$GITLAB_TOKEN
   - export do_token=$do_token
-
+  - echo $do_token
   - echo $GITLAB_TOKEN
   - ls -la
   #- cd ${TF_DIR}  && ls -la  # To get inside the working directory
