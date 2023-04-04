@@ -31,6 +31,8 @@ before_script:
   - export GITLAB_TOKEN=$GITLAB_TOKEN
   - export TF_VAR_public=$publicekeypath
   - export TF_VAR_privat=$privatekeypath
+  - echo $TF_VAR_privat
+  - echo $TF_VAR_public
   - echo $do_token
   - echo $GITLAB_TOKEN
   - ls -la
