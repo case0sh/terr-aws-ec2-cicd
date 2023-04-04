@@ -33,11 +33,11 @@ before_script:
   - ls -la
   #- cd ${TF_DIR}  && ls -la  # To get inside the working directory
   # - terraform init  -reconfigure  -backend-config=address="${TF_HTTP_ADDRESS}"  -backend-config=lock_address="${TF_HTTP_LOCK_ADDRESS}"  -backend-config=unlock_address="${TF_HTTP_UNLOCK_ADDRESS}"  -backend-config=username="${TF_HTTP_USERNAME}"  -backend-config=password="${GITLAB_TOKEN}"  -backend-config=lock_method="${TF_HTTP_LOCK_METHOD}"  -backend-config=unlock_method="${TF_HTTP_UNLOCK_METHOD}"  -backend-config=retry_wait_min="${TF_HTTP_RETRY_WAIT_MIN}"
-  - mkdir -p ~/.ssh
-  - chmod 700 ~/.ssh
-  - eval $(ssh-agent -s)
-  - ssh-keygen -o -a 100 -t ed25519 -f ~/.ssh/id_ed25519
-  - ls -la ~/.ssh
+  # - mkdir -p ~/.ssh
+  # - chmod 700 ~/.ssh
+  # - eval $(ssh-agent -s)
+  # - ssh-keygen -o -a 100 -t ed25519 -f ~/.ssh/id_ed25519
+  # - ls -la ~/.ssh
 
 cache:
   key: tf
@@ -90,7 +90,7 @@ deploy:
     - gitlab-terraform apply
   dependencies:              
     - plan
-  when: manual
+  # when: manual
   only:
     - main
     
