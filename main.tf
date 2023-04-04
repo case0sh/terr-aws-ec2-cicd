@@ -1,143 +1,78 @@
-resource "digitalocean_ssh_key" "newone" {
-  name       = "Pubkey"
-  public_key = file(var.publicekeypath)
-}
-
-# Droplet
-resource "digitalocean_droplet" "web" {
-  image              = var.droplet_image
-  name               = "dev-${random_string.random.result}"
-  region             = var.droplet_region
-  size               = var.droplet_size
-  backups            = false
-  monitoring         = true
-  count  = 1
-
-  ssh_keys = [
-    data.digitalocean_ssh_key.ssh.id,
-    digitalocean_ssh_key.newone.fingerprint
-    ]
-
-  ## Files
-  provisioner "file" {
-    source = "files/installations.sh"
-    destination = "installations.sh"
-
-    connection {
-    host = self.ipv4_address
-    type = "ssh"
-    user  = var.user
-    private_key = file(var.privatekeypath)
-    agent  = false
-    timeout  = "90s"
-
-    } 
+# Security Group
+resource "aws_security_group" "webserver_sg" {
+  name = "${var.environment_slug}-webserver-sg"
+  description = "WebServer DMZ"
+  tags = {
+    Name = "${var.environment_slug}-webserver-sg"
   }
 
-  provisioner "remote-exec" {
-    connection {
-    host = self.ipv4_address
-    type = "ssh"
-    user  = var.user
-    private_key = file(var.privatekeypath)
-    agent  = false
-    timeout  = "160s"
-
-    } 
-    inline = [
-      "apt update  && sudo apt install -y gnupg software-properties-common python3 -y", "echo Done!",
-      "chmod +x ~/installations.sh",
-      "cd ~/",
-      "./installations.sh",
-      "ls -la",
-      "./installations.sh"
-        ]
+  ingress {
+    description = "HTTP (80)"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
-  #   provisioner "file" {
-  #   source = "files/install.yml"
-  #   destination = "install.yml"
-
-  #   connection {
-  #   host = self.ipv4_address
-  #   type = "ssh"
-  #   user  = var.user
-  #   private_key = file(var.privatekeypath)
-  #   agent  = false
-  #   timeout  = "90s"
-
-  #   } 
-  # }
-  #   provisioner "local-exec" {
-  #   command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u root -i '${self.ipv4_address},' --private-key ${var.privatekeypath} -e 'pub_key=${var.publicekeypath}' files/install.yml"
-
-  # }
-
-}
-
-# Firewall
-resource "digitalocean_firewall" "web" {
-  name = "firewall-${random_string.random.result}"
-  # droplet_ids = [digitalocean_droplet.web.id]
-
-  inbound_rule {
-    protocol         = "tcp"
-    port_range       = "22"
-    source_addresses = ["0.0.0.0/0", "::/0"]
+  ingress {
+    description = "SSH (22)"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
-  inbound_rule {
-    protocol         = "tcp"
-    port_range       = "80"
-    source_addresses = ["0.0.0.0/0", "::/0"]
-  }
-
-  inbound_rule {
-    protocol         = "tcp"
-    port_range       = "443"
-    source_addresses = ["0.0.0.0/0", "::/0"]
-  }
- inbound_rule {
-    protocol         = "udp"
-    port_range       = "16262"
-    source_addresses = ["0.0.0.0/0", "::/0"]
-  }
-   inbound_rule {
-    protocol         = "udp"
-    port_range       = "16261"
-    source_addresses = ["0.0.0.0/0", "::/0"]
-  }
-  inbound_rule {
-    protocol         = "icmp"
-    source_addresses = ["0.0.0.0/0", "::/0"]
-  }
-
-  outbound_rule {
-    protocol              = "tcp"
-    port_range            = "1-65535"
-    destination_addresses = ["0.0.0.0/0", "::/0"]
-  }
-
-  outbound_rule {
-    protocol              = "udp"
-    port_range            = "1-65535"
-    destination_addresses = ["0.0.0.0/0", "::/0"]
-  }
-
-  outbound_rule {
-    protocol              = "icmp"
-    destination_addresses = ["0.0.0.0/0", "::/0"]
+  egress {
+    description = "Allow all"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
-resource "random_string" "random" {
-  length  = 3
-  upper   = false
-  special = false
+
+# EC2 instance
+resource "aws_instance" "webserver" {
+  ami                         = data.aws_ami.ubuntu.id
+  instance_type               = var.instance_type
+  user_data                   = file("aws-user-data.sh")
+  key_name                    = aws_key_pair.ansible_keypair.key_name
+  monitoring                  = true
+
+  associate_public_ip_address = true
+
+  # root disk
+  root_block_device {
+    volume_size           = var.linux_root_volume_size
+    volume_type           = var.linux_root_volume_type
+    delete_on_termination = true
+    encrypted             = true
+  }
+
+
+  vpc_security_group_ids = [ aws_security_group.webserver_sg.id ]
+  tags = {
+    Name = "${var.environment_slug}-webserver"
+  }
 }
 
-output "droplet_output" {
-  value = {
-    for droplet in digitalocean_droplet.web:
-    droplet.name => droplet.ipv4_address
+resource "aws_key_pair" "ansible_keypair" {
+  key_name   = "${var.environment_slug}-ansible-key"
+  public_key = file(var.ssh_pub_key_file)
+}
+
+# Get latest Ubuntu Linux 
+data "aws_ami" "ubuntu" {
+  most_recent = true
+  owners      = ["099720109477"]
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
   }
 }
