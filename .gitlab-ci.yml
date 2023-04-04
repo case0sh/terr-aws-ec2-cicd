@@ -72,7 +72,7 @@ validate:
 plan:
   stage: plan
   script:
-    - gitlab-terraform plan
+    - gitlab-terraform plan -var="publicekeypath=$publicekeypath"
     - gitlab-terraform plan-json
   artifacts:
     paths:
@@ -88,7 +88,7 @@ deploy:
   stage: apply
   script:
     - ls -al
-    - gitlab-terraform apply -var="publicekeypath=$publicekeypath"
+    - gitlab-terraform apply 
   dependencies:              
     - plan
   # when: manual
