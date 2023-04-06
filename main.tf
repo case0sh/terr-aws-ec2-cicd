@@ -54,6 +54,13 @@ resource "aws_instance" "webserver" {
     Name = "${var.environment_slug}-webserver"
   }
 }
+
+resource "aws_ec2_instance_state" "webserver" {
+  instance_id = aws_instance.webserver.id
+  state       = "stopped"
+}
+
+
 # data.cloudinit_config.server_config.rendered
 # data "cloudinit_config" "server_config" {
 #   gzip          = true
