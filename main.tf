@@ -60,7 +60,7 @@ data "cloudinit_config" "server_config" {
   base64_encode = true
   part {
     content_type = "text/cloud-config"
-    content      = file("files/server.yml")
+    content      = file("./files/server.yml")
   }
 }
 
