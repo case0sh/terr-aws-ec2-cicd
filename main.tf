@@ -36,7 +36,7 @@ resource "aws_instance" "webserver" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = var.instance_type
   user_data                   = file("aws-user-data.sh")
-  key_name                    = aws_key_pair.ansible_keypair.key_name
+  key_name                    =  "new"#aws_key_pair.ansible_keypair.key_name
   monitoring                  = true
 
   associate_public_ip_address = true
@@ -56,10 +56,10 @@ resource "aws_instance" "webserver" {
   }
 }
 
-resource "aws_key_pair" "ansible_keypair" {
-  key_name   = "${var.environment_slug}-ansible-key"
-  public_key = file(var.ssh_pub_key_file)
-}
+# resource "aws_key_pair" "ansible_keypair" {
+#   key_name   = "${var.environment_slug}-ansible-key"
+#   public_key = file(var.ssh_pub_key_file)
+# }
 
 # Get latest Ubuntu Linux 
 data "aws_ami" "ubuntu" {
