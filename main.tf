@@ -54,20 +54,6 @@ resource "aws_instance" "webserver" {
     Name = "${var.environment_slug}-webserver"
   }
 }
-# data.cloudinit_config.server_config.rendered
-# data "cloudinit_config" "server_config" {
-#   gzip          = true
-#   base64_encode = true
-#   part {
-#     content_type = "text/cloud-config"
-#     content      = file("./files/server.yaml")
-#   }
-# }
-
-# resource "aws_key_pair" "ansible_keypair" {
-#   key_name   = "${var.environment_slug}-ansible-key"
-#   public_key = file(var.ssh_pub_key_file)
-# }
 
 # Get latest Ubuntu Linux 
 data "aws_ami" "ubuntu" {
