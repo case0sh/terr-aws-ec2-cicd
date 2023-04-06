@@ -36,7 +36,7 @@ resource "aws_instance" "webserver" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = var.instance_type
   user_data                   = file("aws-user-data.sh")
-  key_name                    =  "new"#aws_key_pair.ansible_keypair.key_name
+  key_name                    = "new" #aws_key_pair.ansible_keypair.key_name
   monitoring                  = true
 
   associate_public_ip_address = true
@@ -68,7 +68,7 @@ data "aws_ami" "ubuntu" {
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-*"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-*-22.04-amd64-server-*"]
   }
 
   filter {
