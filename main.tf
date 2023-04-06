@@ -35,7 +35,7 @@ resource "aws_security_group" "webserver_sg" {
 resource "aws_instance" "webserver" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
-  user_data     = data.cloudinit_config.server_config.rendered #file("aws-user-data.sh")
+  user_data     =  file("./filres/aws-user-data.sh")
   key_name      = "new"                                        #aws_key_pair.ansible_keypair.key_name
   monitoring    = true
   associate_public_ip_address = true
@@ -54,15 +54,15 @@ resource "aws_instance" "webserver" {
     Name = "${var.environment_slug}-webserver"
   }
 }
-
-data "cloudinit_config" "server_config" {
-  gzip          = true
-  base64_encode = true
-  part {
-    content_type = "text/cloud-config"
-    content      = file("./files/server.yaml")
-  }
-}
+# data.cloudinit_config.server_config.rendered
+# data "cloudinit_config" "server_config" {
+#   gzip          = true
+#   base64_encode = true
+#   part {
+#     content_type = "text/cloud-config"
+#     content      = file("./files/server.yaml")
+#   }
+# }
 
 # resource "aws_key_pair" "ansible_keypair" {
 #   key_name   = "${var.environment_slug}-ansible-key"

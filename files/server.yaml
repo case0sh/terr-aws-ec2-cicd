@@ -17,7 +17,7 @@ runcmd:
   - curl -fsSL https://get.docker.com -o get-docker.sh
   - sh get-docker.sh
   - service docker start
-  - apt install -y nginx1
+  - apt install -y nginx
   - mv /run/myserver/index.html /usr/share/nginx/html/index.html
   - systemctl enable --no-block nginx 
   - systemctl start --no-block nginx 
