@@ -12,4 +12,3 @@ sudo apt install git httpie vim jq zip unzip -y
 git clone https://github.com/Renegade-Master/zomboid-dedicated-server.git
 cd zomboid-dedicated-server
 docker compose -f docker-compose.yml up -d
-
