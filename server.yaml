@@ -1,0 +1,23 @@
+#cloud-config
+write_files: 
+  - path: /run/myserver/index.html
+    owner: root:root
+    permissions: "0644"
+    content: "<h1>cloud init was here</h1>"
+packages:
+ - pwgen
+ - pastebinit
+ - git 
+ - httpie 
+ - jq 
+ - zip 
+ - unzip
+ - [neofetch, vim]
+runcmd:
+  - curl -fsSL https://get.docker.com -o get-docker.sh
+  - sh get-docker.sh
+  - service docker start
+  - apt install -y nginx1
+  - mv /run/myserver/index.html /usr/share/nginx/html/index.html
+  - systemctl enable --no-block nginx 
+  - systemctl start --no-block nginx 

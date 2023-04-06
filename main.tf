@@ -1,6 +1,6 @@
 # Security Group
 resource "aws_security_group" "webserver_sg" {
-  name = "${var.environment_slug}-webserver-sg"
+  name        = "${var.environment_slug}-webserver-sg"
   description = "WebServer DMZ"
   tags = {
     Name = "${var.environment_slug}-webserver-sg"
@@ -33,12 +33,11 @@ resource "aws_security_group" "webserver_sg" {
 
 # EC2 instance
 resource "aws_instance" "webserver" {
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = var.instance_type
-  user_data                   = file("aws-user-data.sh")
-  key_name                    = "new" #aws_key_pair.ansible_keypair.key_name
-  monitoring                  = true
-
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = var.instance_type
+  user_data     = data.cloudinit_config.server_config.rendered #file("aws-user-data.sh")
+  key_name      = "new"                                        #aws_key_pair.ansible_keypair.key_name
+  monitoring    = true
   associate_public_ip_address = true
 
   # root disk
@@ -50,9 +49,18 @@ resource "aws_instance" "webserver" {
   }
 
 
-  vpc_security_group_ids = [ aws_security_group.webserver_sg.id ]
+  vpc_security_group_ids = [aws_security_group.webserver_sg.id]
   tags = {
     Name = "${var.environment_slug}-webserver"
+  }
+}
+
+data "cloudinit_config" "server_config" {
+  gzip          = true
+  base64_encode = true
+  part {
+    content_type = "text/cloud-config"
+    content      = file("${path.module}/server.yml")
   }
 }
 

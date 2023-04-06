@@ -13,12 +13,12 @@ terraform {
   required_providers {
     aws = {
       # version = "~> 4.60.0"
-      source  = "hashicorp/aws"
+      source = "hashicorp/aws"
     }
   }
 }
 
 # Enable the AWS Provider (configured by env variables)
-provider "aws" {      
-  region     = var.aws_region
+provider "aws" {
+  region = var.aws_region
 }
