@@ -24,8 +24,25 @@ resource "aws_security_group" "webserver_sg" {
 
   ingress {
     description = "server 2"
-    from_port   = 16262
-    to_port     = 16262
+    from_port   = 8767
+    to_port     = 8767
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "server 1"
+    from_port   = 8766
+    to_port     = 8766
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+
+  ingress {
+    description = "server 1"
+    from_port   = 16261
+    to_port     = 16261
     protocol    = "udp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -37,7 +54,6 @@ resource "aws_security_group" "webserver_sg" {
     protocol    = "udp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
   egress {
     description = "Allow all"
     from_port   = 0
