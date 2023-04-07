@@ -34,7 +34,7 @@ variable "environment_slug" {
 variable "instance_type" {
   description = "EC2 instance type"
   type        = string
-  default     = "t3.micro"
+  default     = "t3a.medium"
 }
 
 # variable "ssh_pub_key_file" {

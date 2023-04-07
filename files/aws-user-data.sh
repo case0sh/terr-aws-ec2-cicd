@@ -9,5 +9,6 @@ sudo apt install git httpie vim jq zip unzip -y
 
 sudo groupadd docker
 sudo usermod -aG docker $USER
+sudo usermod -aG docker ubuntu
 
-cd /home/ubuntu/  && git clone https://github.com/Renegade-Master/zomboid-dedicated-server.git && cd zomboid-dedicated-server && docker compose up -d
+cd /home/ubuntu/  && git clone https://github.com/PepeCitron/projectzomboid-server.git && cd  projectzomboid && docker compose up -d
