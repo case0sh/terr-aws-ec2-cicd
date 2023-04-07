@@ -92,7 +92,6 @@ resource "aws_instance" "webserver" {
 #   state       = "stopped"
 # }
 
-
 # Get latest Ubuntu Linux 
 data "aws_ami" "ubuntu" {
   most_recent = true
