@@ -19,10 +19,10 @@ output "webserver_dns" {
 # }
 
 # generate the Ansible inventory file (in './tf-output' directory, that is stored as a job artifact)
-resource "local_file" "ansible_inventory" {
-  content  = data.template_file.ansible_inventory.rendered
-  filename = "tf-output/ansible_inventory"
-}
+# resource "local_file" "ansible_inventory" {
+#   content  = data.template_file.ansible_inventory.rendered
+#   filename = "tf-output/ansible_inventory"
+# }
 
 # # process 'terraform.env' template
 # # tflint-ignore: terraform_required_providers
@@ -39,7 +39,7 @@ resource "local_file" "ansible_inventory" {
 
 # generate the 'terraform.env' file to propagate required variables (public IP address, env name & type)
 # tflint-ignore: terraform_required_providers
-resource "local_file" "terraform_dotenv" {
-  content  = data.template_file.terraform_dotenv.rendered
-  filename = "terraform.env"
-}
+# resource "local_file" "terraform_dotenv" {
+#   content  = data.template_file.terraform_dotenv.rendered
+#   filename = "terraform.env"
+# }
