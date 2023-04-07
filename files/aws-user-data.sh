@@ -7,10 +7,7 @@ sudo sh get-docker.sh
 sudo service docker start
 sudo apt install git httpie vim jq zip unzip -y
 
+sudo groupadd docker
+sudo usermod -aG docker $USER
 
-echo "Installing NodeExporter"
-mkdir /home/ubuntu/node_exporter
-cd /home/ubuntu/node_exporter
-
-
-cd /home/ubuntu/  && git clone https://github.com/Renegade-Master/zomboid-dedicated-server.git && cd zomboid-dedicated-server && docker compose -f docker-compose.yml up -d
+cd /home/ubuntu/  && git clone https://github.com/Renegade-Master/zomboid-dedicated-server.git && cd zomboid-dedicated-server && docker compose up -d
