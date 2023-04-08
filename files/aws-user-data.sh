@@ -1,4 +1,8 @@
-#!/bin/bash
+#!/bin/bash -ex
+exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+echo BEGIN
+
+date '+%Y-%m-%d %H:%M:%S'
 sudo apt-get update
 sudo apt upgrade -y
 
@@ -12,4 +16,6 @@ sudo usermod -aG docker $USER
 sudo usermod -aG docker ubuntu
 
 cd /home/ubuntu/  && git clone https://github.com/PepeCitron/projectzomboid-server.git 
-cd projectzomboid && docker compose up -d 
+cd projectzomboid-server/ && docker compose up -d 
+
+echo END
