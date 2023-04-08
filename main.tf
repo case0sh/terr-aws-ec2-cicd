@@ -21,14 +21,6 @@ resource "aws_security_group" "webserver_sg" {
   }
 
   ingress {
-    description = "HTTP (80)"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
     description = "SSH (22)"
     from_port   = 22
     to_port     = 22
@@ -59,8 +51,8 @@ resource "aws_security_group" "webserver_sg" {
   }
   ingress {
     description = "server 1"
-    from_port   = 16261
-    to_port     = 16261
+    from_port   = 16262
+    to_port     = 16262
     protocol    = "udp"
     cidr_blocks = ["0.0.0.0/0"]
   }

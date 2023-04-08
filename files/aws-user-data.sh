@@ -14,12 +14,10 @@ sudo apt install git httpie vim jq zip unzip -y
 # sudo groupadd docker
 sudo usermod -aG docker ubuntu
 ls
-cd /home/ubuntu/  && git clone https://github.com/PepeCitron/projectzomboid-server.git 
+cd /home/ubuntu/  && git clone https://github.com/case0sh/projectzomboid-server.git
 ls
 chown ubuntu. -R projectzomboid-server
-cd projectzomboid-server/ && docker compose up -d 
-sleep 30 
-docker compose down 
+cd projectzomboid-server/ && docker compose .build && docker compose up -d
 
 uptime
 
