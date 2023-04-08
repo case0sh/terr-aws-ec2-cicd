@@ -11,8 +11,6 @@ output:
     - "/var/log/cloud-final.err"
 
 
-groups:
-  - docker
 
 packages:
   - nginx
