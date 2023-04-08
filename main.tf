@@ -101,8 +101,11 @@ resource "aws_instance" "webserver" {
     encrypted             = true
   }
 }
+
 data "template_file" "user_data" {
-  template = file("./files/start-instance.yaml")
+  template = file(var.cloud_init_filepath)
+
+  vars = var.cloud_init_vars
 }
 # resource "aws_ec2_instance_state" "webserver" {
 #   instance_id = aws_instance.webserver.id
