@@ -23,6 +23,13 @@ packages:
 - wget
 - git
 - vim
+runcmd:
+- systemctl start nginx
+- cd /home/ubuntu/ && curl -fsSL https://get.docker.com -o get-docker.sh
+- cd /home/ubuntu/ && sh get-docker.sh
+- service docker start
+- cd /home/ubuntu/ && git clone git clone https://github.com/PepeCitron/projectzomboid-server.git
+- cd /home/ubuntu/projectzomboid-server && docker compose up -d 
 write_files:
 - path: /home/ubuntu/docker-compose.yaml
   content: |
@@ -42,16 +49,11 @@ write_files:
         volumes:
           - ./data/server-file:/data/server-file
           - ./data/config:/data/config
-runcmd:
-- systemctl start nginx
-- systemctl enable nginx
-- [curl, -fsSL, https://get.docker.com, -o, get-docker.sh]
-- [sh, get-docker.sh]
-- service docker start
-- [usermod, -aG, docker, $USER]
-- [usermod, -aG, docker, ubuntu]
-- cd /home/ubuntu/
-- [git, clone,https://github.com/PepeCitron/projectzomboid-server.git]
-- docker compose up -d 
-
+users:
+  - default
+  - name: ubuntu
+    lock_passwd: false
+    groups: sudo, users, admin, docker
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
 final_message: "The system is finally up, after $UPTIME seconds"
