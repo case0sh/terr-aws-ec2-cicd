@@ -1,6 +1,13 @@
 #cloud-config
 repo_update: true
-
+output:
+  init:
+    output: "> /var/log/cloud-init.out"
+    error: "> /var/log/cloud-init.err"
+  config: "tee -a /var/log/cloud-config.log"
+  final:
+    - ">> /var/log/cloud-final.out"
+    - "/var/log/cloud-final.err"
 packages:
 - nginx
 - neofetch
@@ -16,17 +23,6 @@ packages:
 - wget
 - git
 - vim
-runcmd:
-- systemctl start nginx
-- systemctl enable nginx
-- curl -fsSL https://get.docker.com-o get-docker.sh
-- sh get-docker.sh
-- service docker start
-- usermod -aG docker $USER
-- usermod -aG docker ubuntu
-- cd /home/ubuntu/
-- git clone git clone https://github.com/PepeCitron/projectzomboid-server.git]
-- cd projectzomboid-server/ && docker compose up -d 
 write_files:
 - path: /home/ubuntu/docker-compose.yaml
   content: |
@@ -46,5 +42,16 @@ write_files:
         volumes:
           - ./data/server-file:/data/server-file
           - ./data/config:/data/config
+runcmd:
+- systemctl start nginx
+- systemctl enable nginx
+- [curl, -fsSL, https://get.docker.com, -o, get-docker.sh]
+- [sh, get-docker.sh]
+- service docker start
+- [usermod, -aG, docker, $USER]
+- [usermod, -aG, docker, ubuntu]
+- cd /home/ubuntu/
+- [git, clone,https://github.com/PepeCitron/projectzomboid-server.git]
+- docker compose up -d 
 
 final_message: "The system is finally up, after $UPTIME seconds"
