@@ -36,8 +36,8 @@ runcmd:
  - apt-get install -y docker-ce docker-ce-cli containerd.io
  - systemctl start docker
  - systemctl enable docker
- - usermod -aG docker $USER
- - cd /home/ubuntu/ && git clone git clone https://github.com/PepeCitron/projectzomboid-server.git
+ - usermod -aG docker ubuntu
+ - cd /home/ubuntu/ && git clone https://github.com/PepeCitron/projectzomboid-server.git
  - cd /home/ubuntu/projectzomboid-server && docker compose up -d 
 write_files:
   - path: /home/ubuntu/docker-compose.yaml
