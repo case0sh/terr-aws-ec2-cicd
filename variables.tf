@@ -49,10 +49,6 @@ variable "linux_associate_public_ip_address" {
   default     = true
 }
 
-##############################################
-## Network Single AZ Public Only - Variables #
-##############################################
-
 # AWS AZ
 variable "aws_az" {
   type        = string
