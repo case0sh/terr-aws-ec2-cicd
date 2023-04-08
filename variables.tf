@@ -77,5 +77,5 @@ variable "public_subnet_cidr" {
 variable "cloud_init_filepath" {
   type        = string
   description = "filepath to cloud-init script"
-  default     = "./files/start-instance.yaml"
+  default     = "./files/aws-user-data.sh"
 }

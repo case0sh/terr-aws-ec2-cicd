@@ -9,9 +9,6 @@ output:
   final:
     - ">> /var/log/cloud-final.out"
     - "/var/log/cloud-final.err"
-
-
-
 packages:
   - nginx
   - neofetch
@@ -61,5 +58,4 @@ write_files:
           volumes:
             - ./data/server-file:/data/server-file
             - ./data/config:/data/config
-
 final_message: "The system is finally up, after $UPTIME seconds"
