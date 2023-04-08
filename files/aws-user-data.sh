@@ -16,7 +16,11 @@ sudo usermod -aG docker ubuntu
 ls
 cd /home/ubuntu/  && git clone https://github.com/PepeCitron/projectzomboid-server.git 
 ls
+chown ubuntu. -R projectzomboid-server
 cd projectzomboid-server/ && docker compose up -d 
+sleep 30 
+docker compose down 
+
 uptime
 
 echo END
