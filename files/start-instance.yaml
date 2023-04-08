@@ -14,10 +14,6 @@ output:
 groups:
   - docker
 
-system_info:
-  default_user:
-    groups: [ docker ]
-    
 packages:
   - nginx
   - neofetch
@@ -45,6 +41,7 @@ runcmd:
   - apt-get install -y docker-ce docker-ce-cli containerd.io
   - systemctl start docker
   - systemctl enable docker
+  - usermod -aG docker $USER
   - cd /home/ubuntu/ && git clone git clone https://github.com/PepeCitron/projectzomboid-server.git
   - cd /home/ubuntu/projectzomboid-server && docker compose up -d 
 write_files:
