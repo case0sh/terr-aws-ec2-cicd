@@ -4,13 +4,47 @@ repo_update: true
 packages:
 - nginx
 - neofetch
-
+- git 
+- httpie 
+- vim 
+- jq 
+- zip 
+- unzip
+- tmux
+- nmap
+- curl
+- wget
+- git
+- vim
 runcmd:
 - systemctl start nginx
 - systemctl enable nginx
+- curl -fsSL https://get.docker.com-o get-docker.sh
+- sh get-docker.sh
+- service docker start
+- usermod -aG docker $USER
+- usermod -aG docker ubuntu
+- cd /home/ubuntu/
+- git clone git clone https://github.com/PepeCitron/projectzomboid-server.git]
+- cd projectzomboid-server/ && docker compose up -d 
+write_files:
+- path: /home/ubuntu/docker-compose.yaml
+  content: |
+    version: "3.8"
+    services:
+      project-zomboid:
+        container_name: pzserver
+        image: pepecitron/projectzomboid-server
+        restart: unless-stopped
+        environment:
+          SERVER_ADMIN_PASSWORD: "pzadmin"
+          SERVER_PASSWORD: "secretpassword"
+        ports:
+          - "8766:8766/udp"
+          - "8767:8767/udp"
+          - "16261:16261/udp"
+        volumes:
+          - ./data/server-file:/data/server-file
+          - ./data/config:/data/config
 
-users:
-- default
-- name: ubuntu
-  sudo: ALL=(ALL) NOPASSWD:ALL
-  shell: /bin/bash
+final_message: "The system is finally up, after $UPTIME seconds"

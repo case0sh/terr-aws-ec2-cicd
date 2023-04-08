@@ -1,10 +1,12 @@
-# the allocated public IP
-output "webserver_ip" {
-  value = aws_instance.webserver.public_ip
+#####################################
+## Virtual Machine Module - Output ##
+#####################################
+
+output "vm_linux_server_instance_id" {
+  value = aws_instance.webserver.id
 }
 
-# the allocated public DNS
-output "webserver_dns" {
+output "vm_linux_server_instance_public_dns" {
   value = aws_instance.webserver.public_dns
 }
 
