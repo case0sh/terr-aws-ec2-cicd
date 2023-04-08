@@ -12,7 +12,6 @@ sudo service docker start
 sudo apt install git httpie vim jq zip unzip -y
 
 # sudo groupadd docker
-sudo usermod -aG docker $USER
 sudo usermod -aG docker ubuntu
 ls
 cd /home/ubuntu/  && git clone https://github.com/PepeCitron/projectzomboid-server.git 
