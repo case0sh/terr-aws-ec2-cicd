@@ -84,9 +84,9 @@ resource "aws_instance" "webserver" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
   # user_data     = file("./files/aws-user-data.sh")
-  user_data     = data.template_file.user_data.rendered
-  key_name      = var.ssh_key_name
-  monitoring    = true
+  user_data  = data.template_file.user_data.rendered
+  key_name   = var.ssh_key_name
+  monitoring = true
 
   subnet_id                   = aws_subnet.public-subnet.id
   vpc_security_group_ids      = [aws_security_group.webserver_sg.id]
@@ -103,6 +103,7 @@ resource "aws_instance" "webserver" {
 }
 
 data "template_file" "user_data" {
+
   template = file(var.cloud_init_filepath)
 }
 # resource "aws_ec2_instance_state" "webserver" {
