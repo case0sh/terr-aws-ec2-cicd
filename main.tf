@@ -102,7 +102,7 @@ resource "aws_instance" "webserver" {
   }
 }
 data "template_file" "user_data" {
-  template = file(".files/start-instance.yaml")
+  template = file("./files/start-instance.yaml")
 }
 # resource "aws_ec2_instance_state" "webserver" {
 #   instance_id = aws_instance.webserver.id
