@@ -17,5 +17,6 @@ ls
 cd /home/ubuntu/  && git clone https://github.com/PepeCitron/projectzomboid-server.git 
 ls
 cd projectzomboid-server/ && docker compose up -d 
+uptime
 
 echo END
