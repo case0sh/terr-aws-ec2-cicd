@@ -1,7 +1,21 @@
+###################################
+## Virtual Machine Module - Main ##
+###################################
+
+# Create Elastic IP for the EC2 instance
+resource "aws_eip" "linux-eip" {
+  vpc = true
+  tags = {
+    Name = "${var.environment_slug}-linux-eip"
+
+  }
+}
+
 # Security Group
 resource "aws_security_group" "webserver_sg" {
   name        = "${var.environment_slug}-webserver-sg"
   description = "WebServer DMZ"
+  vpc_id      = aws_vpc.vpc.id
   tags = {
     Name = "${var.environment_slug}-webserver-sg"
   }
@@ -29,7 +43,6 @@ resource "aws_security_group" "webserver_sg" {
     protocol    = "udp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
   ingress {
     description = "server 1"
     from_port   = 8766
@@ -37,8 +50,6 @@ resource "aws_security_group" "webserver_sg" {
     protocol    = "udp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-
   ingress {
     description = "server 1"
     from_port   = 16261
@@ -46,7 +57,6 @@ resource "aws_security_group" "webserver_sg" {
     protocol    = "udp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
   ingress {
     description = "server 1"
     from_port   = 16261
@@ -63,14 +73,24 @@ resource "aws_security_group" "webserver_sg" {
   }
 }
 
+# Associate Elastic IP to Linux Server
+resource "aws_eip_association" "linux-eip-association" {
+  instance_id   = aws_instance.webserver.id
+  allocation_id = aws_eip.linux-eip.id
+}
+
 # EC2 instance
 resource "aws_instance" "webserver" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
-  user_data     =  file("./files/aws-user-data.sh")
+  user_data     = file("./files/aws-user-data.sh")
   key_name      = var.ssh_key_name
   monitoring    = true
-  associate_public_ip_address = true
+
+  subnet_id                   = aws_subnet.public-subnet.id
+  vpc_security_group_ids      = [aws_security_group.webserver_sg.id]
+  associate_public_ip_address = var.linux_associate_public_ip_address
+  source_dest_check           = false
 
   # root disk
   root_block_device {
@@ -78,12 +98,6 @@ resource "aws_instance" "webserver" {
     volume_type           = var.linux_root_volume_type
     delete_on_termination = true
     encrypted             = true
-  }
-
-
-  vpc_security_group_ids = [aws_security_group.webserver_sg.id]
-  tags = {
-    Name = "${var.environment_slug}-webserver"
   }
 }
 
