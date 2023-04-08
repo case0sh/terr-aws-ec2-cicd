@@ -104,8 +104,6 @@ resource "aws_instance" "webserver" {
 
 data "template_file" "user_data" {
   template = file(var.cloud_init_filepath)
-
-  vars = var.cloud_init_vars
 }
 # resource "aws_ec2_instance_state" "webserver" {
 #   instance_id = aws_instance.webserver.id

@@ -11,6 +11,6 @@ runcmd:
 
 users:
 - default
-- name: ${ssh_user_name}
+- name: ubuntu
   sudo: ALL=(ALL) NOPASSWD:ALL
   shell: /bin/bash

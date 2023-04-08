@@ -74,16 +74,8 @@ variable "public_subnet_cidr" {
   default     = "10.1.64.0/24"
 }
 
-variable "cloud_init_vars" {
-  type        = map(any)
-  description = "variables used by cloud_init script"
-  default     = {
-    ec2_user = var.ssh_user_name
-
-  }
-}
 variable "cloud_init_filepath" {
   type        = string
   description = "filepath to cloud-init script"
-  default = "./start-instance.yml"
+  default = "./files/start-instance.yaml"
 }
