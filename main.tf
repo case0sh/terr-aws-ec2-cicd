@@ -83,7 +83,8 @@ resource "aws_eip_association" "linux-eip-association" {
 resource "aws_instance" "webserver" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
-  user_data     = file("./files/aws-user-data.sh")
+  # user_data     = file("./files/aws-user-data.sh")
+  user_data     = data.template_file.user_data.rendered
   key_name      = var.ssh_key_name
   monitoring    = true
 
@@ -100,7 +101,9 @@ resource "aws_instance" "webserver" {
     encrypted             = true
   }
 }
-
+data "template_file" "user_data" {
+  template = file(".files/start-instance.yaml")
+}
 # resource "aws_ec2_instance_state" "webserver" {
 #   instance_id = aws_instance.webserver.id
 #   state       = "stopped"

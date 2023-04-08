@@ -73,3 +73,9 @@ variable "public_subnet_cidr" {
   description = "CIDR for the public subnet"
   default     = "10.1.64.0/24"
 }
+
+variable "cloud_init_vars" {
+  type        = map(any)
+  description = "variables used by cloud_init script"
+  default     = {}
+}
