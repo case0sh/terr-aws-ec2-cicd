@@ -6,18 +6,24 @@
 resource "aws_eip" "linux-eip" {
   vpc = true
   tags = {
-    Name = "${var.environment_slug}-linux-eip"
+    Name = "${var.environment_slug}-${random_string.random.result}-linux-eip"
 
   }
 }
 
+resource "random_string" "random" {
+  length  = 3
+  upper   = false
+  special = false
+}
+
 # Security Group
 resource "aws_security_group" "webserver_sg" {
-  name        = "${var.environment_slug}-webserver-sg"
+  name        = "${var.environment_slug}-${random_string.random.result}-webserver-sg"
   description = "WebServer DMZ"
   vpc_id      = aws_vpc.vpc.id
   tags = {
-    Name = "${var.environment_slug}-webserver-sg"
+    Name = "${var.environment_slug}-${random_string.random.result}-webserver-sg"
   }
 
   ingress {

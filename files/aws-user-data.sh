@@ -17,6 +17,6 @@ ls
 cd /home/ubuntu/  && git clone https://github.com/case0sh/projectzomboid-server.git
 ls
 chown ubuntu. -R projectzomboid-server
-cd projectzomboid-server/ && docker compose .build && docker compose up -d
+cd projectzomboid-server/ && docker compose build && docker compose up -d
 uptime
 echo END

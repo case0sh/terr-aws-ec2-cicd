@@ -1,5 +1,3 @@
-
-
 variable "linux_root_volume_size" {
   type        = number
   description = "Volumen size of root volumen of Linux Server"
