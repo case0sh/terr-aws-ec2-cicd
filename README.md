@@ -21,13 +21,7 @@ wget https://releases.hashicorp.com/terraform/1.2.5/terraform_1.2.5_linux_arm64.
 ```bash
 sudo unzip /tmp/terraform.zip -d /usr/local/bin/
 ```
-
-3. Reload your shell.
-```bash
-exec -l $SHELL
-```
-
-4. Verify installation.
+3. Verify installation.
 ```bash
 terraform --help
 ```
@@ -65,4 +59,21 @@ terraform show
 ```bash
 terraform destroy
 ```
+```
+export PROJECT_ID="44572"
+export TF_USERNAME="case0sh"
+export TF_PASSWORD=""
+export TF_ADDRESS="https://gitlab.com/api/v4/projects/${PROJECT_ID}/terraform/state/tf_state"
 
+
+
+terraform init \
+  -backend-config=address=${TF_ADDRESS} \
+  -backend-config=lock_address=${TF_ADDRESS}/lock \
+  -backend-config=unlock_address=${TF_ADDRESS}/lock \
+  -backend-config=username=${TF_USERNAME} \
+  -backend-config=password=${TF_PASSWORD} \
+  -backend-config=lock_method=POST \
+  -backend-config=unlock_method=DELETE \
+  -backend-config=retry_wait_min=5
+```

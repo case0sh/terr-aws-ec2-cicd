@@ -10,6 +10,18 @@ variable "linux_root_volume_type" {
   default     = "gp2"
 }
 
+variable "ebs_volume_size" {
+  type        = number
+  description = "Volumen size volumen of Linux Server"
+  default     = "30"
+}
+
+variable "ebs_volume_type" {
+  type        = string
+  description = "Volumen type volumen of Linux Server. Can be standard, gp3, gp2, io1, sc1 or st1"
+  default     = "gp2"
+}
+
 # provided by the GitLab CI template
 variable "environment_slug" {
   description = "Environment FQDN"
@@ -27,7 +39,6 @@ variable "ssh_key_name" {
   description = "SSH key name"
   type        = string
   default     = "new"
-}
 
 variable "ssh_user_name" {
   description = "SSH username"
@@ -71,5 +82,5 @@ variable "public_subnet_cidr" {
 variable "cloud_init_filepath" {
   type        = string
   description = "filepath to cloud-init script"
-  default     = "./files/aws-user-data.sh"
+  default     = "./start-instance.yml"
 }
