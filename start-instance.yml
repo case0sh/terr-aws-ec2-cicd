@@ -1,5 +1,4 @@
 #cloud-config
-
 package_update: true
 package_upgrade: true
 groups:
@@ -21,6 +20,7 @@ packages:
   - git 
   - vim 
   - hugo
+  
 # write_files:
 #   - path: /home/ubuntu/backup.sh
 #   # content text must be indented

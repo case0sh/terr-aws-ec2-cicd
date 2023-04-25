@@ -26,7 +26,6 @@ resource "aws_security_group" "webserver_sg" {
     Name = "${var.environment_slug}-${random_string.random.result}-webserver-sg"
   }
 
-
   # SSH access from anywhere
   ingress {
     from_port   = 22
