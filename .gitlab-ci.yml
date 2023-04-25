@@ -1,111 +1,83 @@
 ---
-# Pipeline will only trigger when something is pushed to main branch 
+# pipeline will be triggered only when pushed to main branch 
 workflow:  
     rules:
       - if: $CI_COMMIT_BRANCH != "main" && $CI_PIPELINE_SOURCE != "merge_request_event"
         when: never
       - when: always
 
-# List of variables
 variables:
-  TF_HTTP_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/${CI_PROJECT_NAME}
-  TF_HTTP_LOCK_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/${CI_PROJECT_NAME}/lock
-  TF_HTTP_UNLOCK_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/${CI_PROJECT_NAME}/lock
-  TF_HTTP_LOCK_METHOD: "POST"
-  TF_HTTP_UNLOCK_METHOD: "DELETE"
-  TF_HTTP_USERNAME: "gitlab-ci-token"
-  TF_HTTP_PASSWORD: ${GITLAB_TOKEN}
-  TF_HTTP_RETRY_WAIT_MIN: "5"
+  TF_DIR: ${CI_PROJECT_DIR}   # directory in which terraform files are kept
+  STATE_NAME: "tf_state"      # name of terraform state used in "terraform init" command
+  ADDRESS: "https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/${STATE_NAME}"
 
-# Image which will use in each stage
-image:
-  name: "$CI_TEMPLATE_REGISTRY_HOST/gitlab-org/terraform-images/stable:latest"
-  entrypoint: [""]
-
-
-# Script to be executed before each stage 
-before_script:
-  - terraform --version
-  - export GITLAB_TOKEN=$GITLAB_TOKEN
-  - ls -la
-
-cache:
-  key: tf
-  paths:
-    - .terraform
-    - .terraform.lock.hcl
-
+# stages in pipeline
 stages:
-  - prepare
   - validate
   - plan
   - apply
   - destroy
- 
-init:
-  stage: prepare
-  script:
-    - gitlab-terraform init
-  only:  
-    - merge_requests
-    - main
- 
+
+# image used in each and each stage  
+image:
+  name: hashicorp/terraform:light
+  entrypoint: [""]
+
+# script to be executed before each stage 
+before_script:
+  - terraform --version
+  - export GITLAB_ACCESS_TOKEN=$TOKEN
+  - cd ${TF_DIR}            # to get inside terraform directory
+  - terraform init  -reconfigure -backend-config="address=${ADDRESS}" -backend-config="lock_address=${ADDRESS}/lock" -backend-config="unlock_address=${ADDRESS}/lock" -backend-config="username=case0sh" -backend-config="password=$GITLAB_ACCESS_TOKEN" -backend-config="lock_method=POST" -backend-config="unlock_method=DELETE" -backend-config="retry_wait_min=5"      # to initiate terraform backend / gitlab managed terraform state
+
+# to validate terraform files configuration
 validate:
   stage: validate
   script:
-    - gitlab-terraform validate
-  cache:
+    - terraform validate
+  cache:           # to create caches of terraform modules present in .terraform folder  
     key: ${CI_COMMIT_REF_NAME}
     paths:
     - ${TF_DIR}/.terraform
-  only:  
-    - merge_requests
-    - main
- 
+    policy: pull-push
+
+# to check the plan of the infrastructure
 plan:
   stage: plan
   script:
-    - gitlab-terraform plan
-    - gitlab-terraform plan-json
-  artifacts:
-    paths:
-      - plan.cache
-    reports:
-      terraform: plan.json
+    - terraform plan 
+  dependencies:               # dependent on validate stage.
+    - validate
   cache:
     key: ${CI_COMMIT_REF_NAME}
     paths:
     - ${TF_DIR}/.terraform
-  only:  
-    - merge_requests
-    - main 
+    policy: pull
 
-deploy:
+# to create infrastructure on cloud
+apply:
   stage: apply
   script:
-    - ls -al
-    - gitlab-terraform apply
-  dependencies:              
+    - terraform apply  -auto-approve -lock=false
+  dependencies:              # dependent on plan stage.
     - plan
-  # when: manual
   cache:
     key: ${CI_COMMIT_REF_NAME}
     paths:
     - ${TF_DIR}/.terraform
-  only:
-    - main
-    
+    policy: pull
+
+# to destroy infrastructure on cloud. It needs manual aqpproval 
 destroy:
   stage: destroy
   script:
-    - gitlab-terraform destroy
-  dependencies:          
+    - terraform destroy  -auto-approve
+  dependencies:           # dependent on plan & apply stage. 
     - plan
-    - deploy
+    - apply
   cache:
     key: ${CI_COMMIT_REF_NAME}
     paths:
     - ${TF_DIR}/.terraform
+    policy: pull
   when: manual
-  only:
-    - main

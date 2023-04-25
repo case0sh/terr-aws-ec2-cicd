@@ -26,44 +26,37 @@ resource "aws_security_group" "webserver_sg" {
     Name = "${var.environment_slug}-${random_string.random.result}-webserver-sg"
   }
 
+
+  # SSH access from anywhere
   ingress {
-    description = "SSH (22)"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # HTTP access from the VPC
   ingress {
-    description = "server 2"
-    from_port   = 8767
-    to_port     = 8767
-    protocol    = "udp"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    description = "server 1"
-    from_port   = 8766
-    to_port     = 8766
-    protocol    = "udp"
+    from_port   = 1313
+    to_port     = 1313
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    description = "server 1"
-    from_port   = 16261
-    to_port     = 16261
-    protocol    = "udp"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  ingress {
-    description = "server 1"
-    from_port   = 16262
-    to_port     = 16262
-    protocol    = "udp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+
+  # outbound internet access
   egress {
-    description = "Allow all"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -79,18 +72,28 @@ resource "aws_eip_association" "linux-eip-association" {
 
 # EC2 instance
 resource "aws_instance" "webserver" {
-  ami           = data.aws_ami.ubuntu.id
+  # Lookup the correct AMI based on the region we specified
+  ami = lookup(var.aws_amis, var.aws_region)
+
   instance_type = var.instance_type
-  # user_data     = file("./files/aws-user-data.sh")
-  user_data  = data.template_file.user_data.rendered
-  key_name   = var.ssh_key_name
-  monitoring = true
+  user_data     = data.template_file.user_data.rendered
+  key_name      = var.ssh_key_name
+  monitoring    = true
 
   subnet_id                   = aws_subnet.public-subnet.id
   vpc_security_group_ids      = [aws_security_group.webserver_sg.id]
   associate_public_ip_address = var.linux_associate_public_ip_address
   source_dest_check           = false
 
+  connection {
+    type = "ssh"
+
+    # The default username for our AMI
+    user     = var.ssh_user_name
+    key_name = var.ssh_key_name
+
+    # The connection will use the local SSH agent for authentication.
+  }
   # root disk
   root_block_device {
     volume_size           = var.linux_root_volume_size
@@ -98,6 +101,13 @@ resource "aws_instance" "webserver" {
     delete_on_termination = true
     encrypted             = true
   }
+  # EBS Block Storage
+  # ebs_block_device {
+  #   device_name           = "/dev/sdb"
+  #   volume_size           = var.ebs_volume_size
+  #   volume_type           = var.ebs_volume_type
+  #   delete_on_termination = true
+  # }
 }
 
 data "template_file" "user_data" {
@@ -108,19 +118,3 @@ data "template_file" "user_data" {
 #   instance_id = aws_instance.webserver.id
 #   state       = "stopped"
 # }
-
-# Get latest Ubuntu Linux 
-data "aws_ami" "ubuntu" {
-  most_recent = true
-  owners      = ["099720109477"]
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-*-22.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-}
